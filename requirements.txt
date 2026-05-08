@@ -1,0 +1,27 @@
+# ============================================================================
+# Dependencias · Saleshealth CLTV
+# ============================================================================
+# Versionadas para reproducibilidad. Probadas en Python 3.11.
+# ============================================================================
+
+# --- Acceso a base de datos ---
+psycopg[binary]==3.2.3
+python-dotenv==1.0.1
+
+# --- Datos ---
+pandas==2.2.3
+numpy==1.26.4
+
+# --- Modelado CLTV probabilístico (BG/NBD + Gamma-Gamma) ---
+lifetimes==0.11.3
+
+# --- Machine learning y reducción de dimensionalidad ---
+scikit-learn==1.5.2
+umap-learn==0.5.7
+
+# --- Dashboard ---
+streamlit==1.40.2
+plotly==5.24.1
+
+# --- Utilidades ---
+tqdm==4.67.1

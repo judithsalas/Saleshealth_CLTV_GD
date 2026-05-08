@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editores
+.vscode/settings.json
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Cachés de herramientas
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Datos sensibles y secretos
+.env
+.env.local
+.env.txt
+
+# Datos brutos (los originales, no se versionan)
+data/raw/*.sql
+data/raw/*.dump
+data/raw/*.bak
+
+# Exports temporales
+data/exports/*.csv
+data/exports/*.json
+
+# Logs
+*.log

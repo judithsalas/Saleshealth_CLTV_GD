@@ -1,0 +1,120 @@
+// =====================================================================
+// MODELO DIMENSIONAL · DWH (Kimball, esquema en estrella)
+// 4 dimensiones + 2 hechos en schema 'dwh' + tablas de marts analíticos
+// =====================================================================
+
+// =================================================== DIMENSIONES (dwh)
+
+Table dim_date {
+  date_key            int        [pk, note: 'YYYYMMDD entero']
+  date                date       [unique, not null]
+  year                smallint
+  quarter             smallint
+  month               smallint
+  month_name          varchar
+  week_of_year        smallint
+  day_of_week         smallint
+  day_name            varchar
+  is_weekend          boolean
+}
+
+Table dim_customer {
+  customer_key        int        [pk, increment]
+  customer_id         int        [unique, not null, note: 'BK del origen']
+  full_name           varchar
+  email               varchar
+  phone               varchar
+  signup_date         date
+  signup_year         smallint
+  signup_month        varchar
+  loaded_at           timestamp
+}
+
+Table dim_product {
+  product_key         int        [pk, increment]
+  product_id          int        [unique, not null, note: 'BK del origen']
+  product_name        varchar
+  sku                 varchar
+  barcode             varchar
+  category_name       varchar
+  brand_name          varchar
+  manufacturer        varchar
+  unit_price          numeric
+  unit_cost           numeric    [note: 'imputado si NULL en origen']
+  loaded_at           timestamp
+}
+
+Table dim_location {
+  location_key        int        [pk, increment]
+  store_id            int        [unique, not null, note: 'BK del origen']
+  store_name          varchar
+  address             varchar
+  postal_code         varchar
+  district            varchar
+  city                varchar
+  area_type           varchar
+  zone_orientation    varchar
+  latitude            numeric
+  longitude           numeric
+  opened_date         date
+}
+
+// ======================================================== HECHOS (dwh)
+
+Table fact_sales {
+  sale_item_key       int        [pk, increment]
+  sale_id             int        [not null, note: 'agrupa líneas de un pedido']
+  date_key            int        [ref: > dim_date.date_key, not null]
+  customer_key        int        [ref: > dim_customer.customer_key, not null]
+  product_key         int        [ref: > dim_product.product_key, not null]
+  location_key        int        [ref: > dim_location.location_key, not null]
+  sale_timestamp      timestamp
+  quantity            int
+  unit_price          numeric
+  net_amount          numeric    [note: 'subtotal con descuentos']
+  margin_amount       numeric    [note: 'net_amount - cost*quantity']
+  is_returned         boolean
+}
+
+Table fact_returns {
+  return_item_key     int        [pk, increment]
+  sale_item_key       int        [ref: > fact_sales.sale_item_key, not null]
+  date_key            int        [ref: > dim_date.date_key, not null]
+  customer_key        int        [ref: > dim_customer.customer_key, not null]
+  return_timestamp    timestamp
+  quantity_returned   int
+  amount_returned     numeric
+  days_to_return      int        [note: 'GREATEST(0, return - sale)']
+  return_reason       varchar
+}
+
+// ==================================================== MARTS (analíticos)
+
+Table customer_lifetime_value {
+  customer_key            int    [pk, ref: > dim_customer.customer_key]
+  num_orders              int
+  total_units             int
+  revenue_total           numeric
+  margin_total            numeric
+  avg_order_value         numeric
+  first_purchase          date
+  last_purchase           date
+  customer_lifespan_days  int
+  frequency               int    [note: 'recompras BG/NBD']
+  recency                 int
+  cltv_simple             numeric  [note: 'AOV*Freq*Lifetime (PDF)']
+  cltv_historic           numeric
+  cltv_predicted_12m      numeric  [note: 'BG/NBD + Gamma-Gamma']
+  alive_probability       numeric
+  expected_purchases_12m  numeric
+}
+
+Table customer_segments {
+  customer_key            int    [pk, ref: > dim_customer.customer_key]
+  cluster_id              int
+  cluster_name            varchar
+  pca_x                   numeric
+  pca_y                   numeric
+  umap_x                  numeric
+  umap_y                  numeric
+}

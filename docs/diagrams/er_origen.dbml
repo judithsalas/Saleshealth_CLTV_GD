@@ -1,0 +1,108 @@
+// =====================================================================
+// MODELO ENTIDAD-RELACIÓN · BD ORIGEN (saleshealth)
+// 13 tablas representando ERP, CRM, logística y postventa
+// =====================================================================
+
+Table category {
+  category_id     int        [pk]
+  name            varchar
+  description     varchar
+}
+
+Table brand {
+  brand_id        int        [pk]
+  name            varchar
+  country         varchar
+}
+
+Table central_product {
+  central_product_id  int    [pk]
+  brand_id            int    [ref: > brand.brand_id]
+  category_id         int    [ref: > category.category_id]
+  manufacturer        varchar
+  base_cost           numeric
+  recommended_price   numeric
+}
+
+Table product {
+  product_id          int    [pk]
+  central_product_id  int    [ref: > central_product.central_product_id]
+  name                varchar
+  sku                 varchar
+  barcode             varchar
+  category            varchar
+  manufacturer        varchar
+  unit_price          numeric
+}
+
+Table offer {
+  offer_id        int        [pk]
+  description     varchar
+  discount_pct    numeric
+  start_date      date
+  end_date        date
+}
+
+Table product_offer {
+  product_offer_id  int      [pk]
+  product_id        int      [ref: > product.product_id]
+  offer_id          int      [ref: > offer.offer_id]
+}
+
+Table city_zone {
+  city_zone_id      int      [pk]
+  district          varchar
+  postal_code       varchar
+  area_type         varchar
+  zone_orientation  varchar
+}
+
+Table store {
+  store_id        int        [pk]
+  city_zone_id    int        [ref: > city_zone.city_zone_id]
+  name            varchar
+  address         varchar
+  latitude        numeric
+  longitude       numeric
+  opened_date     date
+}
+
+Table customer {
+  customer_id     int        [pk]
+  first_name      varchar
+  last_name       varchar
+  last_name2      varchar
+  email           varchar
+  phone           varchar
+  created_at      timestamp
+}
+
+Table sale {
+  sale_id         int        [pk]
+  customer_id     int        [ref: > customer.customer_id]
+  store_id        int        [ref: > store.store_id]
+  sale_date       timestamp
+  total_amount    numeric
+}
+
+Table sale_item {
+  sale_item_id    int        [pk]
+  sale_id         int        [ref: > sale.sale_id]
+  product_id      int        [ref: > product.product_id]
+  quantity        int
+  unit_price      numeric
+  subtotal        numeric
+}
+
+Table return_reason {
+  return_reason_id int       [pk]
+  description      varchar
+}
+
+Table return_item {
+  return_item_id    int      [pk]
+  sale_item_id      int      [ref: > sale_item.sale_item_id]
+  return_reason_id  int      [ref: > return_reason.return_reason_id]
+  return_date       timestamp
+  quantity          int
+}
