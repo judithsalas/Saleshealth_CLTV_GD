@@ -2,7 +2,7 @@
 
 Pipeline ETL + dashboard analítico para el cálculo de **Customer Lifetime Value (CLTV)** y segmentación de clientes sobre la base de datos Saleshealth.
 
-Proyecto Final · Gestión de Datos · UAX 2025/26
+Proyecto Final · Gestión de Datos · Judith M.ª Salas García
 
 ---
 
